@@ -1,0 +1,6 @@
+{
+    "require": {
+        "firebase/php-jwt": "^6.2",
+        "izniburak/router": "^2.5"
+    }
+}

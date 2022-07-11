@@ -4,8 +4,8 @@ namespace App\Libs;
 
 class TaskLib
 {
-    public function __construct()
+    public function index()
     {
-        // code
+        // code ...
     }
 }
