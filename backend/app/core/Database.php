@@ -9,19 +9,42 @@ class Database
 {
     protected $db;
     protected string $table;
+    protected array $conditions;
+    protected array $values;
 
-    public function __construct($config)
+    public function __construct()
     {
+        $config = [
+            'host' => DB['host'],
+            'name' => DB['name'],
+            'user' => DB['user'],
+            'password' => DB['password'],
+        ];
+
         try {
-            $this->db = new \PDO("mysql:host={$config['host']};dbname={$config['name']}", $config['user'], $config['password']);
+            $this->db = new \PDO(
+                "mysql:host={$config['host']};dbname={$config['name']}",
+                $config['user'],
+                $config['password']
+            );
         } catch (PDOException $e) {
             throw $e;
         }
     }
 
-    public function table(string $table)
+    public static function table(string $table)
     {
-        $this->table = $table;
+        $self = new self;
+        $self->table = $table;
+        return $self;
+    }
+
+    public function where(string $column, string $value)
+    {
+        $this->conditions[] = "{$column}=?";
+
+        $this->values[] = $value;
+
         return $this;
     }
 
@@ -36,13 +59,15 @@ class Database
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
-    public function select(int $id)
+    public function get()
     {
-        $sql = "SELECT * FROM $this->table WHERE id = ?";
+        $conditions = implode(' and ', $this->conditions);
+
+        $sql = "SELECT * FROM $this->table WHERE $conditions";
 
         $stmt = $this->db->prepare($sql);
 
-        $stmt->execute([$id]);
+        $stmt->execute($this->values);
 
         $record = $stmt->fetch(PDO::FETCH_OBJ);
 
