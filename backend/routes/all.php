@@ -10,3 +10,6 @@ $router->get('/', function () {
 # authenticate
 $router->post('/v1/register', 'RegisterLib@register');
 $router->post('/v1/login', 'LoginLib@login');
+
+# tasks
+$router->get('/v1/tasks', 'TaskLib@index');

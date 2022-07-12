@@ -69,7 +69,7 @@ class Database
 
         $stmt->execute($this->values);
 
-        $record = $stmt->fetch(PDO::FETCH_OBJ);
+        $record = $stmt->fetchAll(PDO::FETCH_OBJ);
 
         return $record;
     }
