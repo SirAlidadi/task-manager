@@ -74,6 +74,21 @@ class Database
         return $record;
     }
 
+    public function single()
+    {
+        $conditions = implode(' and ', $this->conditions);
+
+        $sql = "SELECT * FROM $this->table WHERE $conditions";
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute($this->values);
+
+        $record = $stmt->fetch(PDO::FETCH_OBJ);
+
+        return $record;
+    }
+
     public function insert(array $data)
     {
         $placeholder = [];

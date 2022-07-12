@@ -38,3 +38,12 @@ function getToken()
     }
     return null;
 }
+
+function requireJWT($jwt)
+{
+    if (is_null($jwt) or !isset($jwt) or empty($jwt)) {
+        http_response_code(401);
+        echo json_encode(['message' => 'Unauthorized']);
+        exit;
+    }
+}
