@@ -5,56 +5,54 @@ namespace App\Libs;
 use App\Core\Database;
 use App\Core\JWTToken;
 
-class RegisterLib
+class LoginLib
 {
     protected array $invalids = [];
 
-    public function register()
+    public function login()
     {
         $request = $_POST;
 
         $this->validate($request);
 
-        Database::table('users')->insert([
-            'name' => $request['name'],
-            'email' => $request['email'],
-            'password' => md5($request['password']),
-        ]);
+        $user = Database::table('users')->where('email', $request['email'])->get();
+        if ($user == false) {
+            http_response_code(401);
+            echo json_encode(["message" => "user not exists"]);
+            exit;
+        }
 
-        $user = [
-            'name' => $request['name'],
-            'email' => $request['email'],
+        if ($user->password != md5($request['password'])) {
+            http_response_code(401);
+            echo json_encode(["message" => "login failed"]);
+            exit;
+        }
+
+        $userData = [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email
         ];
+        
+        $jwt = JWTToken::token($userData);
 
-        $jwt = JWTToken::token($user);
-
-        http_response_code(201);
+        http_response_code(200);
         echo json_encode([
-            'message' => 'user created successfuly',
-            'user' => $user,
+            'message' => 'login successfuly',
+            'user' => $userData,
             'token' => $jwt
-        ]);
+        ]); 
         exit;
     }
 
     public function validate($fields)
     {
-        if (!isset($fields['name']) or empty($fields['name'])) {
-            $this->invalids['name'] = "name is required";
-        }
-
         if (!isset($fields['email']) or empty($fields['email'])) {
             $this->invalids['email'] = "email is required";
         }
 
         if (!isset($fields['password']) or empty($fields['password'])) {
             $this->invalids['password'] = "password is required";
-        }
-
-        $emailExists = Database::table('users')->where('email', $fields['email'])->get();
-
-        if ($emailExists != false) {
-            $this->invalids['email'] = "email already exists";
         }
 
         if (count($this->invalids) > 0) {
