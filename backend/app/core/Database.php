@@ -110,12 +110,14 @@ class Database
         return (int)$this->db->lastInsertId();
     }
 
-    public function delete(int $id)
+    public function delete()
     {
-        $sql = "DELETE FROM {$this->table} WHERE id = ?";
+        $conditions = implode(' and ', $this->conditions);
+
+        $sql = "DELETE FROM {$this->table} WHERE $conditions";
 
         $stmt = $this->db->prepare($sql);
 
-        return $stmt->execute([$id]);
+        return $stmt->execute($this->values);
     }
 }

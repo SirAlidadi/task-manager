@@ -43,7 +43,8 @@ class TaskLib
 
         $taskId = Database::table('tasks')->insert([
             'title' => $request['title'],
-            'is_done' => 0
+            'is_done' => 0,
+            'user_id' => $decoded->id
         ]);
 
         http_response_code(201);
@@ -80,8 +81,36 @@ class TaskLib
         exit;
     }
 
-    public function destroy()
+    public function destroy($id)
     {
-        // code ...
+        $token = getToken();
+
+        $jwt = isset($token) ? $token : "";
+
+        requireJWT($jwt);
+
+        $decoded = JWTToken::verify($jwt);
+
+        $task = Database::table('tasks')->where('id', $id)->single();
+
+        if (!$task) {
+            http_response_code(404);
+            echo json_encode(["message" => "not found"]);
+            exit;
+        }
+
+        if ($task->user_id != $decoded->id) {
+            http_response_code(403);
+            echo json_encode(["message" => "forbidden"]);
+            exit;
+        }
+
+        Database::table('tasks')->where('id', $id)->delete();
+
+        http_response_code(200);
+        echo json_encode([
+            'message' => 'deleted',
+        ]);
+        exit;
     }
 }
