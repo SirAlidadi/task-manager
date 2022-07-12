@@ -15,13 +15,14 @@ class RegisterLib
 
         $this->validate($request);
 
-        Database::table('users')->insert([
+        $id = Database::table('users')->insert([
             'name' => $request['name'],
             'email' => $request['email'],
             'password' => md5($request['password']),
         ]);
 
         $user = [
+            'id' => $id,
             'name' => $request['name'],
             'email' => $request['email'],
         ];
@@ -51,10 +52,12 @@ class RegisterLib
             $this->invalids['password'] = "password is required";
         }
 
-        $emailExists = Database::table('users')->where('email', $fields['email'])->get();
+        if (!empty($fields['email'])) {
+            $emailExists = Database::table('users')->where('email', $fields['email'])->get();
 
-        if ($emailExists != false) {
-            $this->invalids['email'] = "email already exists";
+            if ($emailExists != false) {
+                $this->invalids['email'] = "email already exists";
+            }
         }
 
         if (count($this->invalids) > 0) {

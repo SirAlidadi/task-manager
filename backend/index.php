@@ -4,11 +4,7 @@
  * ====== Change configure parameters on config.php ======
  */
 
-
-
 header("Content-Type: application/json; charset=UTF-8");
-
-session_start();
 
 require_once "./vendor/autoload.php";
 

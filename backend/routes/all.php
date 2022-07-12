@@ -1,6 +1,12 @@
 <?php
 
-$router->get('/', 'TaskLib@index');
+$router->get('/', function () {
+    header("Content-Type: text/html; charset=UTF-8");
+    echo <<<html
+    <center>Task Manager</center>
+    html;
+});
 
-$router->post('/register', 'RegisterLib@register');
-$router->post('/login', 'LoginLib@login');
+# authenticate
+$router->post('/v1/register', 'RegisterLib@register');
+$router->post('/v1/login', 'LoginLib@login');

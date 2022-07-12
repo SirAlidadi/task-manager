@@ -90,7 +90,9 @@ class Database
 
         $stmt = $this->db->prepare($sql);
 
-        return $stmt->execute(array_values($data));
+        $stmt->execute(array_values($data));
+
+        return (int)$this->db->lastInsertId();
     }
 
     public function delete(int $id)
