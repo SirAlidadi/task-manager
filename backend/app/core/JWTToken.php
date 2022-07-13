@@ -7,10 +7,10 @@ use Firebase\JWT\JWT;
 
 class JWTToken
 {
+    protected static $key = 'task_manager';
+
     public static function token(array $data)
     {
-        $key = 'task_manager';
-
         $payload = [
             'iss' => APP['url'],
             'aud' => APP['url'],
@@ -19,6 +19,13 @@ class JWTToken
             'data' => $data
         ];
 
-        return JWT::encode($payload, $key, 'HS256');
+        return JWT::encode($payload, self::$key, 'HS256');
+    }
+
+    public static function verify(string $jwt)
+    {
+        $decoded = JWT::decode($jwt, new Key(self::$key, 'HS256'));
+
+        return $decoded->data;
     }
 }

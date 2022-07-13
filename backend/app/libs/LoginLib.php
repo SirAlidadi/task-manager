@@ -15,7 +15,7 @@ class LoginLib
 
         $this->validate($request);
 
-        $user = Database::table('users')->where('email', $request['email'])->get();
+        $user = Database::table('users')->where('email', $request['email'])->single();
         if ($user == false) {
             http_response_code(401);
             echo json_encode(["message" => "user not exists"]);
