@@ -110,6 +110,27 @@ class Database
         return (int)$this->db->lastInsertId();
     }
 
+    public function update(array $data)
+    {
+        $fields = [];
+
+        foreach ($data as $column => $value) {
+            $fields[] = "{$column}='{$value}'";
+        }
+
+        $fields = implode(',', $fields);
+
+        $conditions = implode(' and ', $this->conditions);
+
+        $sql = "UPDATE {$this->table} SET {$fields} WHERE {$conditions}";
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute($this->values);
+
+        return $stmt->rowCount();
+    }
+
     public function delete()
     {
         $conditions = implode(' and ', $this->conditions);

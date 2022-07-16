@@ -113,4 +113,27 @@ class TaskLib
         ]);
         exit;
     }
+
+    public function done($id)
+    {
+        $task = Database::table('tasks')->where('id', $id)->single();
+
+        if (empty($task)) {
+            http_response_code(404);
+            exit(json_encode('not found'));
+        }
+
+        Database::table('tasks')->where('id', $id)->update([
+            'is_done' => 1 - $task->is_done
+        ]);
+
+        http_response_code(200);
+        echo json_encode([
+            'message' => 'updated',
+            'date' => [
+                'task_done' => 1 - $task->is_done
+            ]
+        ]);
+        exit;
+    }
 }
